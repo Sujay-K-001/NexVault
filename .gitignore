@@ -1,0 +1,32 @@
+﻿# Build output
+NexVault/build/
+NexVault/out/
+NexVault/target/
+
+# Local databases and browser profiles
+NexVault/data/
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.bak
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*secrets*
+*credentials*
+*passwords.properties
+*.pem
+*.key
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
