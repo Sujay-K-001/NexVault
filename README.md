@@ -1,177 +1,210 @@
-# NexVault
+# 🔐 NexVault
+### Your passwords. Your vault. Your control.
 
-### Your passwords. Your device. Your control.
+<p align="center">
+  <strong>A privacy-focused desktop password manager built with Java, AES-256-GCM encryption, and SQLite.</strong>
+</p>
 
-NexVault is a local-first desktop password manager for Windows, built with **Java 21, AES-256-GCM encryption, and SQLite**. It combines privacy-focused credential storage with intelligent security monitoring, password auditing, recovery controls, and a modern, immersive interface.
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21" />
+  <img src="https://img.shields.io/badge/Security-AES--256--GCM-00A884?style=for-the-badge&logo=letsencrypt&logoColor=white" alt="AES-256-GCM" />
+  <img src="https://img.shields.io/badge/Database-SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
+  <img src="https://img.shields.io/badge/Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
+</p>
 
-Your vault stays on your machine. Your master password is never stored, and your credentials are encrypted before being persisted.
-
-## Features
-
-- **Encrypted Vault** — AES-256-GCM authenticated encryption with a random 256-bit data key and unique 96-bit IVs.
-- **Master Password Security** — PBKDF2-HMAC-SHA256 with 200,000 iterations and a unique salt.
-- **Secure Recovery** — A one-time recovery key lets you regain access if you forget your master password.
-- **Password Generator** — Generate strong passwords with configurable length and character sets using `SecureRandom`.
-- **Security Center** — Identify weak, reused, and outdated passwords with a security score and actionable insights.
-- **Breach Monitoring** — Check passwords against the Pwned Passwords database using k-anonymity.
-- **Intrusion Alerts** — Email notifications for repeated failed unlock attempts, with escalating lockout protection.
-- **Automatic Locking** — Inactivity timeout, manual locking, clipboard clearing, and persistent lockout tracking.
-- **Credential Management** — Create, edit, search, categorize, copy, and delete saved credentials.
-- **Modern Interface** — Obsidian dark mode, a refined light theme, translucent surfaces, interactive cards, animated startup effects, and responsive layouts.
-- **Privacy-Focused Design** — A loopback-only local server, per-launch session tokens, request validation, and a private browser profile.
-
-## Security at a Glance
-
-| Component | Implementation |
-|---|---|
-| Credential encryption | AES-256-GCM |
-| Key derivation | PBKDF2-HMAC-SHA256 |
-| KDF iterations | 200,000 |
-| Data encryption key | Random 256-bit key |
-| Password recovery | Recovery-key-based key wrapping |
-| Local persistence | SQLite |
-| Password generation | Java `SecureRandom` |
-| Local API | Loopback-only HTTP server |
-| Email alerts | SMTP with TLS |
-| Breach checks | Pwned Passwords k-anonymity |
-
-NexVault is designed to minimize exposure of sensitive information. However, no software can guarantee protection against every attack, especially malware or an attacker with access to an unlocked device.
-
-## Quick Start
-
-### Requirements
-
-- Windows 10 or Windows 11
-- Java Development Kit (JDK) 21 or newer
-- Internet access for the initial dependency downloads and optional online features
-
-Download a compatible JDK from [Eclipse Adoptium](https://adoptium.net/temurin/releases/?version=21).
-
-### Run NexVault
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/Sujay-K-001/NexVault.git
-   cd NexVault/NexVault
-   ```
-
-2. Launch the application:
-
-   ```bat
-   run-vault.bat
-   ```
-
-3. Create your master password and follow the setup instructions.
-
-On first launch, the launcher downloads the required Java libraries, compiles the application, and opens NexVault in its own app window.
-
-**Useful launcher options**
-
-```bat
-run-vault.bat --test
-run-vault.bat --browser-default
-```
-
-- `--test` builds the application and runs its automated tests.
-- `--browser-default` opens the interface in your default browser.
-
-Keep the launcher console open while the application is running.
-
-## How It Works
-
-NexVault separates encryption, storage, business logic, and presentation into distinct layers.
-
-1. **Key management:** A random data key encrypts vault contents. The data key is wrapped using a key derived from the master password and separately using the recovery key.
-2. **Encryption:** AES-256-GCM protects credential payloads and authenticates associated entry identifiers.
-3. **Storage:** SQLite stores encrypted payloads and the metadata required to unlock and manage the vault.
-4. **Application logic:** Java handles authentication, credential operations, password auditing, recovery, and lockout controls.
-5. **Presentation:** A local web interface communicates with the Java application through a protected loopback API.
-
-### Technology Stack
-
-- **Core:** Java 21+
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript
-- **Database:** SQLite
-- **Cryptography:** Java Cryptography Architecture
-- **Local API:** JDK HTTP server
-- **Desktop experience:** Dedicated Chromium-based app window when supported
-- **Build and launch:** Windows batch scripts and PowerShell
-
-## Project Structure
-
-```text
-NexVault/
-├── run-vault.bat
-├── scripts/
-│   └── fetch.ps1
-├── src/
-│   ├── main/
-│   │   ├── java/com/nexvault/
-│   │   │   ├── crypto/
-│   │   │   ├── db/
-│   │   │   ├── logo/
-│   │   │   ├── mail/
-│   │   │   ├── util/
-│   │   │   ├── vault/
-│   │   │   ├── web/
-│   │   │   └── Main.java
-│   │   └── resources/
-│   │       ├── schema.sql
-│   │       └── web/
-│   └── test/
-├── lib/       # Downloaded dependencies
-├── build/     # Generated build output
-└── data/      # Local vault and browser profile
-```
-
-## Privacy and Security Notes
-
-- **Local storage:** Vault data is stored locally in `data/nexvault.db`.
-- **Master password:** Never stored as plaintext.
-- **Recovery key:** Save it offline in a secure location. Anyone possessing it may be able to recover the vault.
-- **Breach monitoring:** Only a partial password hash is sent to the breach-check service; the password and full hash are not sent.
-- **Email alerts:** Configure SMTP in Settings → Security alert e-mail. Use an app password where required.
-- **Website icons:** Fetching website logos may expose your IP address to the relevant website.
-- **Clipboard:** Clipboard history and cloud synchronization may retain copied passwords even after NexVault clears the clipboard.
-- **Backups:** Back up `data/nexvault.db` securely. Without both the master password and recovery key, recovery may be impossible.
-
-Optional network features require connectivity. Core vault functionality is designed to run locally.
-
-## Testing
-
-Run the built-in test suite:
-
-```bat
-run-vault.bat --test
-```
-
-The launcher handles compilation and test execution.
-
-## Current Scope and Limitations
-
-- Windows is the primary supported desktop platform.
-- Email-address breach monitoring is not included.
-- The password-strength score is a heuristic, not a guarantee of security.
-- A compromised device or running, unlocked session can expose sensitive information.
-- Dependency checksum verification helps detect corruption but does not guarantee that a dependency source has not been compromised.
-
-## Roadmap
-
-Potential future improvements include:
-
-- Expanded automated security testing
-- More comprehensive backup and restore workflows
-- Additional platform support
-- Further hardening of local API and session handling
-- Improved accessibility and interface customization
-
-## License
-
-No license has been specified yet. Until a license is added to the repository, reuse and redistribution permissions should not be assumed.
+<p align="center">
+  <a href="https://github.com/Sujay-K-001/NexVault">📦 Repository</a> •
+  <a href="https://github.com/Sujay-K-001/NexVault/issues">🐛 Report a Bug</a> •
+  <a href="https://github.com/Sujay-K-001/NexVault/issues">💡 Request a Feature</a>
+</p>
 
 ---
 
-**NexVault** — Private by design. Secure by architecture. Built for control.
+## ✨ About NexVault
 
-Developed by [Sujay K](https://github.com/Sujay-K-001).
+**NexVault** is a desktop password manager designed to help users store and manage their credentials through a secure, locally oriented vault experience.
+
+Built with Java, it combines authenticated encryption, password-based key derivation, a SQLite database, and a modern web-based interface.
+
+From protecting saved credentials to detecting suspicious login attempts, NexVault brings essential password-management functionality together in one application.
+
+> 🛡️ **Built around privacy. Designed for control. Made for everyday security.**
+
+## 🚀 Features
+
+| Feature | Description |
+|---|---|
+| 🔐 Encrypted Vault | Uses AES-256-GCM authenticated encryption to protect stored vault data. |
+| 🔑 Master Password | Password-based authentication for accessing the vault. |
+| 🧂 Secure Key Derivation | Uses PBKDF2-HMAC-SHA256 with a 16-byte salt and 200,000 iterations. |
+| 🗄️ Local Database | Uses SQLite for persistent application data. |
+| 🚨 Login Protection | Tracks failed unlock attempts and applies a temporary lockout. |
+| 📧 Security Alerts | Email notifications for suspicious or repeated failed login attempts. |
+| 🔎 Breach Checking | Includes a password breach-checking feature using a k-anonymity approach. |
+| 🎨 Modern Interface | HTML, CSS, and JavaScript power the application's interactive interface. |
+| 🪟 Desktop Experience | Java desktop integration provides a convenient way to launch and use the vault. |
+
+*Security features depend on the application's implementation and configuration. Review the source code and setup requirements before relying on NexVault for sensitive credentials.*
+
+## 🧰 Tech Stack
+
+<p>
+  <img src="https://img.shields.io/badge/Java-Backend-ED8B00?style=flat-square&logo=openjdk&logoColor=white" alt="Java" />
+  <img src="https://img.shields.io/badge/HTML5-Interface-E34F26?style=flat-square&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/CSS3-Styling-1572B6?style=flat-square&logo=css3&logoColor=white" alt="CSS3" />
+  <img src="https://img.shields.io/badge/JavaScript-Interactions-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/SQLite-Storage-003B57?style=flat-square&logo=sqlite&logoColor=white" alt="SQLite" />
+</p>
+
+- **Language:** Java 21
+- **Interface:** HTML, CSS, JavaScript
+- **Database:** SQLite
+- **Encryption:** AES-256-GCM
+- **Key derivation:** PBKDF2-HMAC-SHA256
+- **Desktop integration:** Java with supporting web resources
+- **Version control:** Git and GitHub
+
+## 🏗️ How It Works
+
+```text
+           👤 User
+              │
+              ▼
+      🔑 Master Password
+              │
+              ▼
+      🛡️ Authentication
+              │
+              ▼
+       🔐 Encrypted Vault
+              │
+       ┌──────┴──────┐
+       ▼             ▼
+  🔒 Encryption   🗄️ SQLite
+       │             │
+       └──────┬──────┘
+              ▼
+      💻 Desktop Interface
+```
+
+NexVault combines authentication, cryptographic protection, persistent storage, and a desktop interface to provide a unified password-management experience.
+
+## ⚙️ Getting Started
+
+### 📋 Prerequisites
+
+Before running NexVault, make sure you have:
+
+- ☕ **Java Development Kit (JDK) 21** installed.
+- 🪟 A compatible Windows environment.
+- 📦 Git installed to clone the repository.
+- 🔧 Any additional dependencies specified by the project.
+
+Check your Java installation:
+
+```powershell
+java -version
+javac -version
+```
+
+### 📥 1. Clone the repository
+
+```powershell
+git clone https://github.com/Sujay-K-001/NexVault.git
+cd NexVault
+```
+
+### 📂 2. Navigate to the application directory
+
+The current repository layout places the application inside a nested `NexVault` directory.
+
+```powershell
+cd NexVault
+```
+
+### ▶️ 3. Launch NexVault
+
+```powershell
+.\run-vault.bat
+```
+
+Follow the application's on-screen instructions to configure or unlock your vault.
+
+> 💡 If the application does not start, verify your Java version and review the project's scripts and dependency requirements.
+
+## 📁 Project Structure
+
+```text
+NexVault/
+├── .gitignore
+├── README.md
+└── NexVault/
+    ├── src/              # Java application source
+    ├── lib/              # Project libraries
+    ├── scripts/          # Supporting scripts
+    ├── web/              # HTML, CSS, JavaScript and assets
+    ├── run-vault.bat     # Windows launcher
+    └── ...
+```
+
+*The tree highlights the main project areas; individual files may vary by version.*
+
+## 🔒 Security & Privacy
+
+Security is central to NexVault's design.
+
+- 🔐 **Authenticated encryption:** AES-GCM provides confidentiality and integrity protection when used correctly.
+- 🧂 **Password-based key derivation:** PBKDF2-HMAC-SHA256 derives cryptographic key material from a password.
+- 🚫 **Login safeguards:** Failed-attempt tracking and temporary lockouts help discourage repeated guessing.
+- 📧 **Security notifications:** Configured email alerts can help users identify repeated failed unlock attempts.
+- 🗃️ **Local data storage:** SQLite stores application data locally.
+
+### ⚠️ Important Security Notes
+
+NexVault is a personal software project and should not be assumed to have undergone an independent security audit.
+
+- Use a strong, unique master password.
+- Keep backups of important vault data in a secure location.
+- Never publish database files, encryption keys, SMTP credentials, application passwords, or other secrets.
+- Configure email credentials outside publicly committed source code.
+- Understand the recovery and backup limitations before storing critical credentials.
+- Do not treat a breach-checking feature as a guarantee that a password is safe.
+
+## 🛣️ Roadmap
+
+Potential future improvements include:
+
+- [ ] 📸 Add verified application screenshots and a demonstration GIF.
+- [ ] 🔑 Improve password generation and strength feedback.
+- [ ] 🧪 Expand automated tests for authentication and encryption.
+- [ ] ♿ Improve accessibility and keyboard navigation.
+- [ ] 📦 Streamline application packaging and installation.
+- [ ] 🛡️ Conduct an independent security review.
+
+## 🤝 Contributing
+
+Suggestions, bug reports, and improvements are welcome.
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make and test your changes.
+4. Submit a pull request describing the improvement.
+
+For bugs or feature ideas, visit the [GitHub Issues](https://github.com/Sujay-K-001/NexVault/issues) page.
+
+## 👨‍💻 Author
+
+**Sujay Kumar**
+
+Developer of NexVault — a project exploring desktop application development, password security, encryption, and modern interface design.
+
+- 🐙 GitHub: [@Sujay-K-001](https://github.com/Sujay-K-001)
+- 📦 Project: [NexVault](https://github.com/Sujay-K-001/NexVault)
+
+---
+
+<p align="center">
+  <strong>🔐 NexVault — Security in your hands.</strong>
+  <br/>
+  <sub>Built with ☕ Java and a focus on privacy.</sub>
+</p>
